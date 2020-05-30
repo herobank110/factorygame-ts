@@ -1,12 +1,12 @@
 {
-  "name": "garden-engine",
+  "name": "factorygame",
   "version": "1.0.0",
   "description": "A Typescript game framework extension of three.js.",
   "main": "index.js",
   "scripts": {
     "start": "npx tsc"
   },
-  "repository": "https://github.com/herobank110/garden",
+  "repository": "https://github.com/herobank110/factorygame",
   "author": "David Kanekanian",
   "license": "ISC",
   "devDependencies": {
