@@ -1,0 +1,16 @@
+{
+  "name": "garden-engine",
+  "version": "1.0.0",
+  "description": "A Typescript game framework extension of three.js.",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx tsc"
+  },
+  "repository": "https://github.com/herobank110/garden",
+  "author": "David Kanekanian",
+  "license": "ISC",
+  "devDependencies": {
+    "three": "0.116.1",
+    "typescript": "3.9.3"
+  }
+}
