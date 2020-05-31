@@ -14,6 +14,12 @@ Below is a key identifying each of the suggestion types.
 - `(Python???)` -
 Python specific code that may not be needed for the Typescript conversion.
 
+- `(Refactor???)` -
+Code irrespective of language that needs to be transformed.
+
+- `(Deprecated???)` -
+Code that is out of date and should not be used anymore.
+
 - `(Spelling???)` -
 Possible spelling mistake.
 
@@ -25,3 +31,6 @@ Documentation or comments are inconsistent with the code.
 
 - `(Done???)` -
 Identifies a TODO that has already been done.
+
+- `(MissingFeature???)` - 
+A reference to a feature that has not yet been implemented.
