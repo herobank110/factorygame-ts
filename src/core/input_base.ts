@@ -224,8 +224,8 @@ export class GUIInputHandler {
      * 
      * Only for action events (not axis events). (MissingFeature???)
      * 
-     * @param rawKey Key that was pressed.
-     * @param inputEvent Type of event to occur.
+     * @param inKey Key that was pressed.
+     * @param keyEvent Type of event to occur.
      */
     protected registerKeyEvent(inKey: FKey, keyEvent: EInputEvent): void {
         switch (keyEvent) {
