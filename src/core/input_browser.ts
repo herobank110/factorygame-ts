@@ -36,13 +36,49 @@ export class BrowserInputHandler extends GUIInputHandler {
         // }]
     ]);
 
-    /** Setup input events for a widget. */
-    bindToDocument(inDocument: Document): void {
+    /** Setup input events for a window.
+     * 
+     * This could be the 'real' window or an iframe.
+     */
+    public bindToWindow(inWindow: Window): void {
+        var document = inWindow.document;
+        // Prevent right click context menu
+        inWindow.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+        });
 
-        inDocument.addEventListener("mousedown", (event) => {
-            // event.preventDefault();
-            // const key = browserKeyMapping.get(event.button.toString());
-            // this.registerKeyEvent(key, EInputEvent.PRESSED);
-        })
+        // These bindings will prevent the default action so other
+        // handlers may not work. You can still safely bind to 'click'
+        // events or 'keypress' events instead.
+
+        // TODO: Also set focus on mouse presses
+
+        const mouseMapping = BrowserInputHandler.browserKeyMapping.get("mouse");
+        inWindow.addEventListener(mouseMapping.pressFormat, (event: MouseEvent) => {
+            event.preventDefault();
+            const key = mouseMapping.keys.get(event.button.toString());
+            if (key !== undefined)
+                this.registerKeyEvent(key, EInputEvent.PRESSED);
+        });
+        inWindow.addEventListener(mouseMapping.releaseFormat, (event: MouseEvent) => {
+            event.preventDefault();
+            const key = mouseMapping.keys.get(event.button.toString());
+            if (key !== undefined)
+                this.registerKeyEvent(key, EInputEvent.RELEASED);
+        });
     }
 }
+
+
+
+
+
+document.addEventListener("contextmenu", (event) => { event.preventDefault(); })
+
+document.querySelector("button").addEventListener("click", () => {
+    window.focus();
+    //document.body.focus();
+    document.querySelector("#test").innerText = "button click";
+
+})
+//dd
