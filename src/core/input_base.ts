@@ -14,7 +14,7 @@ import { GameplayStatics } from "../utils/gameplay.js";
 export type InputActionCallback = () => void;
 
 
-export class GameViewportClient {} // (Refactor???)
+export class GameViewportClient { } // (Refactor???)
 
 /** Holder for an input key. Should not be used directly, use EKeys instead. */
 export interface FKey {
@@ -203,8 +203,7 @@ export class GUIInputHandler {
         // but once the engine module is refactored this will
         // be derived from EngineObject and it will be called
         // automatically when it is appropriate.
-        // this._inputMappings = GameplayStatics.gameEngine.inputMappings;
-        this._inputMappings = new EngineInputMappings();
+        this._inputMappings = GameplayStatics.gameEngine.inputMappings;
     }
 
     /**
