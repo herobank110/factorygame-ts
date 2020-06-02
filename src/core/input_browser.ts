@@ -21,11 +21,11 @@ export class BrowserInputHandler extends GUIInputHandler {
             pressFormat: "mousedown",
             releaseFormat: "mouseup",
             keys: new Map([
-                ["1", EKeys.LeftMouseButton],
-                ["2", EKeys.MiddleMouseButton],
-                ["3", EKeys.RightMouseButton],
-                ["4", EKeys.ThumbMouseButton],
-                ["5", EKeys.ThumbMouseButton2]
+                ["0", EKeys.LeftMouseButton],
+                ["1", EKeys.MiddleMouseButton],
+                ["2", EKeys.RightMouseButton],
+                ["3", EKeys.ThumbMouseButton],
+                ["4", EKeys.ThumbMouseButton2]
             ])
         }],
 

@@ -182,7 +182,7 @@ export class EngineInputMappings {
      * @param keyEvent Type of key event.
      */
     public fireActionBindings(actionName: string, keyEvent: EInputEvent): void {
-        const eventCode = actionName + "." + keyEvent;
+        const eventCode = actionName + ":" + keyEvent;
         const boundFuncs = this._boundEvents.get(eventCode);
         if (boundFuncs !== undefined)
             boundFuncs.forEach((func) => { func(); });
@@ -203,7 +203,8 @@ export class GUIInputHandler {
         // but once the engine module is refactored this will
         // be derived from EngineObject and it will be called
         // automatically when it is appropriate.
-        this._inputMappings = GameplayStatics.gameEngine.inputMappings;
+        // this._inputMappings = GameplayStatics.gameEngine.inputMappings;
+        this._inputMappings = new EngineInputMappings();
     }
 
     /**
