@@ -2,7 +2,9 @@
  * Take input from the browser web page and send engine input events.
  */
 
+
 import { GUIInputHandler, EKeys, EInputEvent, FKey } from "./input_base.js";
+
 
 type KeyMap = Map<string, FKey>;
 type BrowserKeyMap = {
@@ -10,11 +12,6 @@ type BrowserKeyMap = {
     releaseFormat: string,
     keys: KeyMap
 };
-
-
-// window.addEventListener("", )
-// document.body.focus({""})
-
 
 
 /** Handle input from web browser. */
@@ -30,55 +27,94 @@ export class BrowserInputHandler extends GUIInputHandler {
                 ["4", EKeys.ThumbMouseButton],
                 ["5", EKeys.ThumbMouseButton2]
             ])
+        }],
+
+        ["keyboard", {
+            pressFormat: "keydown",
+            releaseFormat: "keyup",
+            keys: new Map([
+                ["KeyA", EKeys.A],
+                ["KeyB", EKeys.B],
+                ["KeyC", EKeys.C],
+                ["KeyD", EKeys.D],
+                ["KeyE", EKeys.E],
+                ["KeyF", EKeys.F],
+                ["KeyG", EKeys.G],
+                ["KeyH", EKeys.H],
+                ["KeyI", EKeys.I],
+                ["KeyJ", EKeys.J],
+                ["KeyK", EKeys.K],
+                ["KeyL", EKeys.L],
+                ["KeyM", EKeys.M],
+                ["KeyN", EKeys.N],
+                ["KeyO", EKeys.O],
+                ["KeyP", EKeys.P],
+                ["KeyQ", EKeys.Q],
+                ["KeyR", EKeys.R],
+                ["KeyS", EKeys.S],
+                ["KeyT", EKeys.T],
+                ["KeyU", EKeys.U],
+                ["KeyV", EKeys.V],
+                ["KeyW", EKeys.W],
+                ["KeyX", EKeys.X],
+                ["KeyY", EKeys.Y],
+                ["KeyZ", EKeys.Z]
+            ])
         }]
-        // ["keyboard", {
-        //     pressFormat: ""
-        // }]
     ]);
 
-    /** Setup input events for a window.
-     * 
-     * This could be the 'real' window or an iframe.
-     */
-    public bindToWindow(inWindow: Window): void {
-        var document = inWindow.document;
+    /** Setup input events for a widget. */
+    public bindToWidget(inWidget: Window | HTMLElement): void {
+        // Bind mouse events.
+        let mouseBindings = BrowserInputHandler.browserKeyMapping.get("mouse");
+        if (mouseBindings !== undefined) {
+            let pressFormat = mouseBindings.pressFormat;
+            let releaseFormat = mouseBindings.releaseFormat;
+            let keys = mouseBindings.keys;
+
+            inWidget.addEventListener(pressFormat, (event: MouseEvent) => {
+                this.onInput(event, keys, event.button.toString(), EInputEvent.PRESSED);
+                inWidget.focus();  // Set keyboard focus when clicking on the game window.
+            });
+
+            inWidget.addEventListener(releaseFormat, (event: MouseEvent) => {
+                this.onInput(event, keys, event.button.toString(), EInputEvent.RELEASED);
+            });
+        }
+
+        // Bind keyboard events.
+        let keyboardBindings = BrowserInputHandler.browserKeyMapping.get("keyboard");
+        if (keyboardBindings !== undefined) {
+            let pressFormat = keyboardBindings.pressFormat;
+            let releaseFormat = keyboardBindings.releaseFormat;
+            let keys = keyboardBindings.keys;
+
+            inWidget.addEventListener(pressFormat, (event: KeyboardEvent) => {
+                this.onInput(event, keys, event.code, EInputEvent.PRESSED);
+            });
+
+            inWidget.addEventListener(releaseFormat, (event: KeyboardEvent) => {
+                this.onInput(event, keys, event.code, EInputEvent.RELEASED);
+            });
+        }
+
         // Prevent right click context menu
-        inWindow.addEventListener("contextmenu", (event) => {
+        inWidget.addEventListener("contextmenu", (event) => {
             event.preventDefault();
-        });
-
-        // These bindings will prevent the default action so other
-        // handlers may not work. You can still safely bind to 'click'
-        // events or 'keypress' events instead.
-
-        // TODO: Also set focus on mouse presses
-
-        const mouseMapping = BrowserInputHandler.browserKeyMapping.get("mouse");
-        inWindow.addEventListener(mouseMapping.pressFormat, (event: MouseEvent) => {
-            event.preventDefault();
-            const key = mouseMapping.keys.get(event.button.toString());
-            if (key !== undefined)
-                this.registerKeyEvent(key, EInputEvent.PRESSED);
-        });
-        inWindow.addEventListener(mouseMapping.releaseFormat, (event: MouseEvent) => {
-            event.preventDefault();
-            const key = mouseMapping.keys.get(event.button.toString());
-            if (key !== undefined)
-                this.registerKeyEvent(key, EInputEvent.RELEASED);
         });
     }
+
+    /**
+     * Process generic browser input events and send to the engine.
+     * 
+     * These bindings will prevent the default action so other
+     * handlers may not work. You can still safely bind to 'click'
+     * events or 'keypress' events instead.
+     */
+    private onInput(event: Event, keys: KeyMap, formatArg: string, inputEvent: EInputEvent) {
+        let key = keys.get(formatArg);
+        if (key !== undefined)
+            this.registerKeyEvent(key, inputEvent);
+        event.preventDefault();
+    }
 }
-
-
-
-
-
-document.addEventListener("contextmenu", (event) => { event.preventDefault(); })
-
-document.querySelector("button").addEventListener("click", () => {
-    window.focus();
-    //document.body.focus();
-    document.querySelector("#test").innerText = "button click";
-
-})
-//dd
