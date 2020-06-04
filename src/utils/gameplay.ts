@@ -38,10 +38,10 @@ export class GameplayStatics {
 
     // Root window
 
-    private static _window: Document;
+    private static _window: Window;
     public static get rootWindow() { return this._window; }
 
-    static setRootWindow(value: Document) {
+    static setRootWindow(value: Window) {
         GameplayStatics._window = value;
     }
 }
