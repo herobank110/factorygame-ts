@@ -254,6 +254,11 @@ export class World extends EngineObject {
         throw new Error("Method not implemented.");
     }
 
+    // TODO: Implement this!
+    public setActorTickEnabled(tickFunction: FTickFunction, newTickEnabled: boolean): void {
+        throw new Error("Method not implemented.");
+    }
+
 
     // Typescript member variable declarations.
 
@@ -275,7 +280,7 @@ export class World extends EngineObject {
 // Start of tick data structures
 
 /** Groups for ticking objects. Lower value groups are fired first. */
-enum ETickGroup {
+export enum ETickGroup {
     ENGINE = 0,
     WORLD = 1,
     PHYSICS = 2,
@@ -285,7 +290,92 @@ enum ETickGroup {
     MAX = 5
 }
 
-class FTickFunction { }
+
+/** Contains data about how a particular object should tick. */
+export class FTickFunction {
+    public get tickEnabled(): boolean { return this._tickEnabled; }
+
+    public set tickEnabled(value: boolean) {
+        if (this.target === null) return;
+
+        let world = GameplayStatics.world;
+        if (world === null) return;
+
+        if (value) {
+            this.registerTickFunction(world);
+            this._tickEnabled = true;
+            return;
+        }
+
+        this.unregisterTickFunction(world);
+        this._tickEnabled = false;
+    }
+
+    /**
+     * Set reasonable defaults.
+     * 
+     * @param target Object containing `tick` method.
+     */
+    constructor(target: Actor = null) {
+        // (DocFix???)
+        this.target = target
+        this.canEverTick = true
+        this.startWithTickEnabled = true
+        this.tickGroup = ETickGroup.GAME
+        this.priority = 1
+
+        this._tickEnabled = false
+
+        // Pausing is not implemented yet.
+        this.tickEvenWhenPaused = false
+    }
+
+    /**
+     * Register a tick function in the given world.
+     * 
+     * @param world World containing master list.
+     * 
+     * @see tickEnabled setter
+     */
+    public registerTickFunction(world: World): void {
+        if (this.target === null) return;
+
+        try {
+            world.setActorTickEnabled(this, true);
+        } catch (error) {
+            throw new Error("Tried to register tick function on invalid world");
+        }
+    }
+
+    /**
+     * Unregister the tick function from the master
+     * list of tick functions.
+     * 
+     * @param world World containing master list.
+     * 
+     * @see tickEnabled setter
+     */
+    public unregisterTickFunction(world: World): void {
+        if (this.target === null) return;
+
+        try {
+            world.setActorTickEnabled(this, false);
+        } catch (error) {
+            throw new Error("Tried to unregister tick function on invalid world");
+        }
+    }
+
+
+    // Typescript member variable declarations    
+    public canEverTick: boolean;
+    public startWithTickEnabled: boolean;
+    public target: Actor;
+    public tickGroup: ETickGroup;
+    public priority: number;
+    private _tickEnabled: boolean;
+    public tickEvenWhenPaused: boolean;
+
+}
 
 // End of tick data structures
 ///////////////////////////////////////////////////////////
