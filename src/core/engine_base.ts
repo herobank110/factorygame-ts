@@ -3,6 +3,7 @@
 import { GameplayStatics } from "../utils/gameplay.js";
 import { EngineInputMappings } from "./input_base.js";
 import { BrowserInputHandler } from "./input_browser.js";
+import { Loc, ILoc } from "../utils/loc.js";
 
 
 /**
@@ -22,12 +23,12 @@ export class EngineObject extends EngineObjectBase {
      * Called when this object has been successfully initialised
      * and it is safe to call gameplay functions from this point on
      */
-    beginPlay(): void { }
+    public beginPlay(): void { }
 
     /**
      * Called before this object will be destroyed.
      */
-    beginDestroy(): void { }
+    public beginDestroy(): void { }
 
 }
 
@@ -134,6 +135,11 @@ export class GameEngine extends EngineObject {
  * track of all dynamically spawned actors and triggering core
  * gameplay events such as tick.
  */
+
+
+/** A type-safe way to pass classes. A default constructor must exist. */
+interface TSubclassOf<T> { new(): T; };
+
 export class World extends EngineObject {
 
     /** Set default values. */
@@ -146,9 +152,7 @@ export class World extends EngineObject {
         this._tickingActors = tickingActorSet;
 
         this._actors = [];
-
         this._toDestroy = [];
-
         this._tkObj = null;
     }
 
@@ -158,6 +162,80 @@ export class World extends EngineObject {
         this._tkObj = tkObj;
         this.__tryStartTickLoop();
     }
+
+    /**
+     * Attempt to initialise a new actor in this world, from start
+     * to finish.
+     * 
+     * To have further control on the actor before it is gameplay ready,
+     * use deferred_spawn_actor.
+     * 
+     * @param actorClass Class of actor to spawn (Spelling???) 
+     * @param loc Location to spawn actor at.
+     * @param ActorType Type of actor to spawn and return.
+     * @return Spawned actor if successful, otherwise None
+     */
+    public spawnActor<T extends Actor>(actorClass: TSubclassOf<T>, loc: ILoc): T {
+        return this.finishDeferredSpawnActor(this.deferredSpawnActor(actorClass, loc));
+    }
+
+    /**
+     * Begin to initialise a new actor in this world, then allow
+     * attributes to be set before finishing the spawning process.
+     * 
+     * Warning: It is not safe to call any gameplay functions (eg tick)
+     * or anything involving the world because the actor is not officially
+     * in the world yet.
+     * 
+     * @param actorClass class of actor to spawn
+     * @param loc location to spawn actor at
+     * @return initialised actor object if successful, otherwise None
+     */
+    public deferredSpawnActor<T extends Actor>(actorClass: TSubclassOf<T>, loc: ILoc): T {
+        // validate actorClass to check it is valid (Spelling???)
+        if (actorClass === null)
+            return null;
+
+        // initialise new actor object.
+        let actorObject = new actorClass();
+        actorObject.__spawn__(this, new Loc(loc));
+
+        // return the newly created actor_object for further modification and
+        // to pass in to finishDeferredSpawnActor
+        return actorObject;
+    }
+
+    /**
+     * Finish spawning an actor in this world, allowing gameplay
+     * functions to safely begin for the actor.
+     * 
+     * @param actorObject initialised actor object to finish spawning
+     * @return gameplay ready actor object if successful, otherwise None
+     */
+    public finishDeferredSpawnActor<T extends Actor>(actorObject: T): T {
+
+        // validate actorObject to check it is valid
+        if (actorObject === null)
+            return null;
+
+        // update world references
+        actorObject._world = this;
+        this._actors.push(actorObject);
+
+        // Attach to scene so it can be rendered.
+        // this.add(actorObject);
+
+        // call begin play
+        actorObject.beginPlay();
+
+        // schedule ticks if necessary (DocFix???)
+        // if actor_object.primary_actor_tick.start_with_tick_enabled:
+        //     self.set_actor_tick_enabled(actor_object, True)
+
+        // return the fully spawned actor for further use
+        return actorObject;
+    }
+
 
     /**
      * Attempt to start a tick loop.
@@ -207,7 +285,40 @@ enum ETickGroup {
     MAX = 5
 }
 
+class FTickFunction { }
+
 // End of tick data structures
 ///////////////////////////////////////////////////////////
 
-class Actor extends EngineObject { }
+class Actor extends EngineObject {
+
+    public get world() { return this._world; }
+    public get location() { return this._location; }
+    public set location(value: ILoc) { this._location = new Loc(value); }
+
+
+    /** Called when actor is spawned by world. Shouldn't be called directly. */
+    public __spawn__(world: World, location: Loc) {
+
+        this._world = world;
+        this._location = location;
+
+        // Register the tick function for this actor.
+        let tickFunc = this.primaryActorTick;
+        if (tickFunc !== undefined && tickFunc.canEverTick) {
+            tickFunc.target = this;
+            tickFunc.tickEnabled = tickFunc.startWithTickEnabled;
+        }
+    }
+
+
+    // Typescript member variable declarations
+
+    /** World actor is in. */
+    private _world: World;
+
+    /** Location of actor in world. */
+    private _location: Loc;
+
+    protected primaryActorTick: FTickFunction;
+}
