@@ -26,7 +26,6 @@ export interface FKey {
 
 /** Private module level implementation of FKey. */
 class FKey_Impl implements FKey {
-    public readonly keyName: string;
 
     public constructor(keyName: string) {
         this.keyName = keyName;
@@ -38,6 +37,8 @@ class FKey_Impl implements FKey {
     // hash(): number {
     //     return hash()
     // }
+    
+    public readonly keyName: string;
 }
 
 
@@ -46,42 +47,42 @@ export class EKeys {
 
     // Mouse keys
 
-    static readonly LeftMouseButton: FKey = new FKey_Impl("LeftMouseButton");
-    static readonly RightMouseButton: FKey = new FKey_Impl("RightMouseButton");
-    static readonly MiddleMouseButton: FKey = new FKey_Impl("MiddleMouseButton");
+    public static readonly LeftMouseButton: FKey = new FKey_Impl("LeftMouseButton");
+    public static readonly RightMouseButton: FKey = new FKey_Impl("RightMouseButton");
+    public static readonly MiddleMouseButton: FKey = new FKey_Impl("MiddleMouseButton");
 
-    // Currently thumb buttons aren't recognised by tkinter.
-    static readonly ThumbMouseButton: FKey = new FKey_Impl("ThumbMouseButton");
-    static readonly ThumbMouseButton2: FKey = new FKey_Impl("ThumbMouseButton2");
+    // Currently thumb buttons aren't recognised by tkinter. (Python???)
+    public static readonly ThumbMouseButton: FKey = new FKey_Impl("ThumbMouseButton");
+    public static readonly ThumbMouseButton2: FKey = new FKey_Impl("ThumbMouseButton2");
 
     // Keyboard keys
 
-    static readonly A: FKey = new FKey_Impl("A");
-    static readonly B: FKey = new FKey_Impl("B");
-    static readonly C: FKey = new FKey_Impl("C");
-    static readonly D: FKey = new FKey_Impl("D");
-    static readonly E: FKey = new FKey_Impl("E");
-    static readonly F: FKey = new FKey_Impl("F");
-    static readonly G: FKey = new FKey_Impl("G");
-    static readonly H: FKey = new FKey_Impl("H");
-    static readonly I: FKey = new FKey_Impl("I");
-    static readonly J: FKey = new FKey_Impl("J");
-    static readonly K: FKey = new FKey_Impl("K");
-    static readonly L: FKey = new FKey_Impl("L");
-    static readonly M: FKey = new FKey_Impl("M");
-    static readonly N: FKey = new FKey_Impl("N");
-    static readonly O: FKey = new FKey_Impl("O");
-    static readonly P: FKey = new FKey_Impl("P");
-    static readonly Q: FKey = new FKey_Impl("Q");
-    static readonly R: FKey = new FKey_Impl("R");
-    static readonly S: FKey = new FKey_Impl("S");
-    static readonly T: FKey = new FKey_Impl("T");
-    static readonly U: FKey = new FKey_Impl("U");
-    static readonly V: FKey = new FKey_Impl("V");
-    static readonly W: FKey = new FKey_Impl("W");
-    static readonly X: FKey = new FKey_Impl("X");
-    static readonly Y: FKey = new FKey_Impl("Y");
-    static readonly Z: FKey = new FKey_Impl("Z");
+    public static readonly A: FKey = new FKey_Impl("A");
+    public static readonly B: FKey = new FKey_Impl("B");
+    public static readonly C: FKey = new FKey_Impl("C");
+    public static readonly D: FKey = new FKey_Impl("D");
+    public static readonly E: FKey = new FKey_Impl("E");
+    public static readonly F: FKey = new FKey_Impl("F");
+    public static readonly G: FKey = new FKey_Impl("G");
+    public static readonly H: FKey = new FKey_Impl("H");
+    public static readonly I: FKey = new FKey_Impl("I");
+    public static readonly J: FKey = new FKey_Impl("J");
+    public static readonly K: FKey = new FKey_Impl("K");
+    public static readonly L: FKey = new FKey_Impl("L");
+    public static readonly M: FKey = new FKey_Impl("M");
+    public static readonly N: FKey = new FKey_Impl("N");
+    public static readonly O: FKey = new FKey_Impl("O");
+    public static readonly P: FKey = new FKey_Impl("P");
+    public static readonly Q: FKey = new FKey_Impl("Q");
+    public static readonly R: FKey = new FKey_Impl("R");
+    public static readonly S: FKey = new FKey_Impl("S");
+    public static readonly T: FKey = new FKey_Impl("T");
+    public static readonly U: FKey = new FKey_Impl("U");
+    public static readonly V: FKey = new FKey_Impl("V");
+    public static readonly W: FKey = new FKey_Impl("W");
+    public static readonly X: FKey = new FKey_Impl("X");
+    public static readonly Y: FKey = new FKey_Impl("Y");
+    public static readonly Z: FKey = new FKey_Impl("Z");
 }
 
 
@@ -96,13 +97,6 @@ export enum EInputEvent {
 
 /** Contains mappings between input events and functions to fire. */
 export class EngineInputMappings {
-    /** Mappings of actions to keys. Each action has a set of keys. */
-    _actionMappings: Map<string, Set<FKey>>;
-
-    /** dictionary: keys -> action mapping CONCAT key_event : value -> set of callables
-     * Functions to fire when relevant input is received. (DocFix???)
-     */
-    _boundEvents: Map<string, Set<InputActionCallback>>;
 
     public constructor() {
         this._actionMappings = new Map();
@@ -187,6 +181,17 @@ export class EngineInputMappings {
         if (boundFuncs !== undefined)
             boundFuncs.forEach((func) => { func(); });
     }
+
+
+    // Typescript member variable declaration.
+
+    /** Mappings of actions to keys. Each action has a set of keys. */
+    private _actionMappings: Map<string, Set<FKey>>;
+
+    /** dictionary: keys -> action mapping CONCAT key_event : value -> set of callables
+     * Functions to fire when relevant input is received. (DocFix???)
+     */
+    private _boundEvents: Map<string, Set<InputActionCallback>>;
 }
 
 /** Handle raw input from a GUI system to map it to an FKey */
