@@ -120,7 +120,7 @@ export class GameEngine extends EngineObject {
 
     /**
      * Class to use for initial world creation.
-     * 
+     *
      * If omitted default world will be used.
      */
     protected _startingWorld: typeof World;
@@ -166,11 +166,11 @@ export class World extends EngineObject {
     /**
      * Attempt to initialise a new actor in this world, from start
      * to finish.
-     * 
+     *
      * To have further control on the actor before it is gameplay ready,
      * use deferred_spawn_actor.
-     * 
-     * @param actorClass Class of actor to spawn (Spelling???) 
+     *
+     * @param actorClass Class of actor to spawn (Spelling???)
      * @param loc Location to spawn actor at.
      * @param ActorType Type of actor to spawn and return.
      * @return Spawned actor if successful, otherwise None
@@ -182,11 +182,11 @@ export class World extends EngineObject {
     /**
      * Begin to initialise a new actor in this world, then allow
      * attributes to be set before finishing the spawning process.
-     * 
+     *
      * Warning: It is not safe to call any gameplay functions (eg tick)
      * or anything involving the world because the actor is not officially
      * in the world yet.
-     * 
+     *
      * @param actorClass class of actor to spawn
      * @param loc location to spawn actor at
      * @return initialised actor object if successful, otherwise None
@@ -208,12 +208,11 @@ export class World extends EngineObject {
     /**
      * Finish spawning an actor in this world, allowing gameplay
      * functions to safely begin for the actor.
-     * 
+     *
      * @param actorObject initialised actor object to finish spawning
      * @return gameplay ready actor object if successful, otherwise None
      */
     public finishDeferredSpawnActor<T extends Actor>(actorObject: T): T {
-
         // validate actorObject to check it is valid
         if (actorObject === null)
             return null;
@@ -239,7 +238,7 @@ export class World extends EngineObject {
 
     /**
      * Attempt to start a tick loop.
-     * 
+     *
      * @return Whether the tick loop was started successfully.
      */
     private __tryStartTickLoop(): boolean {
@@ -254,9 +253,45 @@ export class World extends EngineObject {
         throw new Error("Method not implemented.");
     }
 
-    // TODO: Implement this!
+    /**
+     * Set whether an actor should tick and schedule/cancel tick events
+     * for the future.
+     *
+     * Shouldn't be called directly, call from the actor itself. Use actor's
+     * tick_function like `primary_actor_tick.tick_enabled`.
+     *
+     * @param tickFunction Data about the tick function to modify.
+     * @param newTickEnabled (DocFix???)
+     */
     public setActorTickEnabled(tickFunction: FTickFunction, newTickEnabled: boolean): void {
-        throw new Error("Method not implemented.");
+        let actor = tickFunction.target;
+
+        // Ensure we are adding a valid actor with a valid tick function.
+        let func: (dt: number) => void;
+        try {
+            func = actor.tick;
+        } catch (error) {
+            return;
+        }
+        if (!(func instanceof Function))
+            return;
+
+            if (newTickEnabled) {
+                // Add the actor to its specified tick group's actor set.
+
+                let group = this._tickingActors.get(tickFunction.tickGroup);
+                if (group === undefined)
+                    return;
+                group.add(actor);
+            } else {
+                // Remove the actor from its tick group's actor set.
+                // (Refactor???) group used in both branches, py ver. overused exceptions
+                
+                let group = this._tickingActors.get(tickFunction.tickGroup);
+                if (group === undefined)
+                    return;
+                group.delete(actor);  // no throw guarantee
+            }
     }
 
 
@@ -313,7 +348,7 @@ export class FTickFunction {
 
     /**
      * Set reasonable defaults.
-     * 
+     *
      * @param target Object containing `tick` method.
      */
     constructor(target: Actor = null) {
@@ -332,9 +367,9 @@ export class FTickFunction {
 
     /**
      * Register a tick function in the given world.
-     * 
+     *
      * @param world World containing master list.
-     * 
+     *
      * @see tickEnabled setter
      */
     public registerTickFunction(world: World): void {
@@ -350,9 +385,9 @@ export class FTickFunction {
     /**
      * Unregister the tick function from the master
      * list of tick functions.
-     * 
+     *
      * @param world World containing master list.
-     * 
+     *
      * @see tickEnabled setter
      */
     public unregisterTickFunction(world: World): void {
@@ -366,7 +401,8 @@ export class FTickFunction {
     }
 
 
-    // Typescript member variable declarations    
+    // Typescript member variable declarations
+
     public canEverTick: boolean;
     public startWithTickEnabled: boolean;
     public target: Actor;
@@ -386,10 +422,8 @@ class Actor extends EngineObject {
     public get location() { return this._location; }
     public set location(value: ILoc) { this._location = new Loc(value); }
 
-
     /** Called when actor is spawned by world. Shouldn't be called directly. */
     public __spawn__(world: World, location: Loc) {
-
         this._world = world;
         this._location = location;
 
@@ -401,6 +435,27 @@ class Actor extends EngineObject {
         }
     }
 
+    public constructor() {
+        super();
+        this.primaryActorTick = new FTickFunction();
+    }
+
+    /**
+     * Called every frame if the actor is set to tick.
+     * @param deltaTime time since last frame, in seconds (DocFix???) (Inconsistent???)
+     */
+    public tick(deltaTime: number): void {
+        throw new Error(`Actor ${this} has tick enabled but default tick `
+            + `function is being called.`);
+    }
+
+    public beginDestroy(): void {
+        super.beginDestroy();
+
+        // Stop ticking
+        this.world.setActorTickEnabled(this.primaryActorTick, false);
+    }
+
 
     // Typescript member variable declarations
 
@@ -410,5 +465,6 @@ class Actor extends EngineObject {
     /** Location of actor in world. */
     private _location: Loc;
 
+    /** Tick options for this actor. Can be further modified by children. */
     protected primaryActorTick: FTickFunction;
 }
