@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garden Engine</title>
+    <link rel="stylesheet" href="../testStyle.css">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.116.1/build/three.min.js"
+        integrity="sha256-xJj9x8gbL9ENxfyA7xT9xNm/EbK5GWl4bdSqhbS2iWY=" crossorigin="anonymous"></script>
+
+    <script type="module">
+        import { GameplayUtilities, Actor, GameplayStatics } from "../../src/index.js";
+        import { FactoryEngine } from "../../src/factoryEngine.js";
+
+        class TickingActor extends Actor {
+            constructor() {
+                super();
+                this.tickCount = 0;
+            }
+            tick(deltaTime) {
+                this.tickCount++;
+                document.body.innerText = `Tick #${this.tickCount}, last frame time: ${deltaTime}`;
+            }
+        }
+
+        function main() {
+            GameplayUtilities.createGameEngine(FactoryEngine);
+            GameplayStatics.world.spawnActor(TickingActor, [0, 0]);
+        }
+
+        main();
+
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>
