@@ -2,7 +2,7 @@
 
 // ///<reference path="../core/engine_base.ts"/> // not working!!!
 // seems circular references are OK... but only needed the types!!!
-import { GameEngine, World } from "../core/engine_base.js";
+import { GameEngine, World } from "../core/engineBase.js";
 
 
 /** Holds central information about the running game. */

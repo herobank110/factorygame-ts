@@ -3,7 +3,7 @@
  */
 
 
-import { GUIInputHandler, EKeys, EInputEvent, FKey } from "./input_base.js";
+import { GUIInputHandler, EKeys, EInputEvent, FKey } from "./inputBase.js";
 
 
 type KeyMap = Map<string, FKey>;

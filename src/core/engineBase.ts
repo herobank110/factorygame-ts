@@ -1,7 +1,7 @@
 /** Game engine for FactoryGame. */
 
-import { EngineInputMappings } from "./input_base.js";
-import { BrowserInputHandler } from "./input_browser.js";
+import { EngineInputMappings } from "./inputBase.js";
+import { BrowserInputHandler } from "./inputBrowser.js";
 import { Loc, ILoc } from "../utils/loc.js";
 import { GameplayStatics } from "../utils/gameplay.js";
 // (DocFix???) add double newlines between classes
