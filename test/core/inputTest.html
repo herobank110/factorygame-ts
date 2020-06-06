@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garden Engine</title>
+    <link rel="stylesheet" href="../testStyle.css">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.116.1/build/three.min.js"
+        integrity="sha256-xJj9x8gbL9ENxfyA7xT9xNm/EbK5GWl4bdSqhbS2iWY=" crossorigin="anonymous"></script>
+
+    <script type="module">
+        import { GameplayUtilities, Actor, GameplayStatics, GameEngine } from "../../src/index.js";
+        import { EKeys, EInputEvent } from "../../src/core/inputBase.js";
+
+        var clearTimer;
+
+        function showJumpText() {
+            clearTimeout(clearTimer);
+            // Show random number to make it easy to tell when a new
+            // input event has come in and the text hasn't been cleared yet.
+            let label = document.getElementById("jump-label");
+            label.innerText = `${Math.floor(1000 + Math.random() * 8999)} Received a jump press`;
+
+            // Clear the text after a short delay.
+            clearTimer = setTimeout(() => { label.innerText = ""; }, 300);
+        }
+
+        function main() {
+            // Create the base class engine in this browser window.
+            let gameEngine = GameplayUtilities.createGameEngine(GameEngine, window);
+
+
+            // Add an action mapping.
+
+            // Map the keys in 'j u m p' to a new action mapping called "Jump".
+            gameEngine.inputMappings.addActionMapping("Jump", EKeys.J, EKeys.U, EKeys.M, EKeys.P);
+
+            // Bind the test function to be triggered when "Jump" is pressed.
+            gameEngine.inputMappings.bindAction("Jump", EInputEvent.PRESSED, showJumpText);
+        }
+
+        main();
+
+    </script>
+</head>
+
+<body>
+    <div style="padding: 10px;">
+        <p>Press any key in <kbd>j-u-m-p</kbd> to jump.</p>
+        <p id="jump-label"></p>
+    </div>
+</body>
+
+</html>
