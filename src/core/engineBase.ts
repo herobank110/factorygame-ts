@@ -4,6 +4,8 @@ import { EngineInputMappings } from "./inputBase.js";
 import { BrowserInputHandler } from "./inputBrowser.js";
 import { Loc, ILoc } from "../utils/loc.js";
 import { GameplayStatics } from "../utils/gameplay.js";
+//import * as THREE from "three";
+var THREE = window.THREE;
 // (DocFix???) add double newlines between classes
 
 /** A type-safe way to pass classes. A default constructor must exist. */
@@ -66,7 +68,7 @@ export class GameEngine extends EngineObject {
 
         // Create/setup the game window.
 
-        if (master === null) {
+        if (master === undefined || master === null) {
             // Create window for game. (Python???)
             this._window = window;
             this._window.document.head.title = this.WINDOW_TITLE;
@@ -105,6 +107,7 @@ export class GameEngine extends EngineObject {
         // try: (DocFix???)
         let world = new this._startingWorld();
         world.__initWorld__(this._window); // (Inconsistent??) above used GameplayStatics.rootWindow
+        GameplayStatics.setWorld(world);        
         world.beginPlay();
         // except AttributeError as e:
         //     # The starting world is not a valid class.
@@ -259,8 +262,8 @@ export class World extends EngineObject {
         if (actorObject === null)
             return null;
 
-        // update world references
-        actorObject._world = this;
+        // update world references (Refactor???) already set in __spawn__
+        // actorObject._world = this;
         this._actors.push(actorObject);
 
         // Attach to scene so it can be rendered.
@@ -328,9 +331,9 @@ export class World extends EngineObject {
         // call tick event on other actors
         for (let group = 0; group < ETickGroup.MAX; group++) {
             // Call the groups in order.
-            let actorSet = this._tickingActors[group];
+            let actorSet = this._tickingActors.get(group);
             actorSet.forEach((actor) => {
-                actor.tick();
+                actor.tick(dt);
             });
         }
 
@@ -338,7 +341,7 @@ export class World extends EngineObject {
         // setTimeout(() => {this._tickLoop();}, dt);
 
         // schedule next tick using requestAnimationFrame for smoother animation
-        requestAnimationFrame(this._tickLoop);
+        requestAnimationFrame(() => { this._tickLoop(); });
     }
 
     /**

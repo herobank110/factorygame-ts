@@ -1,5 +1,8 @@
 /** No need to fully re-implement a simple vector! */
 
+// import * as THREE from "three";
+var THREE = window.THREE;
+
 /** Structure for representing coordinates, with basic arithmetic.
  * 
  * Essentially a 3 dimensional vector.

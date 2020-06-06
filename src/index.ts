@@ -19,3 +19,14 @@
  */
 
 // Import useful classes.
+
+export { Actor, GameEngine } from "./core/engineBase.js";
+export { Loc, ILoc } from "./utils/loc.js";
+export { GameplayStatics, GameplayUtilities } from "./utils/gameplay.js";
+
+
+// for typescript giving errors wanting to import three, when it should
+// come from a CDN sourced on the HTML page, use this workaround.
+// var THREE = window.THREE;
+// When the script is loaded from the HTML page, that's where it goes.
+// Although in the electron version we probably want to bundle it with the game.
