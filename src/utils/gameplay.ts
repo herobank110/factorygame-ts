@@ -7,6 +7,13 @@ import { GameEngine, World } from "../core/engine_base.js";
 
 /** Holds central information about the running game. */
 export class GameplayStatics {
+    /** Clear all references to gameplay objects. */
+    public static clearAll() {
+        let cls = GameplayStatics;
+
+        cls._gameEngine = null;
+        cls._world = null;
+    }
 
     /** Check whether the game engine is still valid. */
     public static isGameValid(): boolean {
@@ -18,7 +25,7 @@ export class GameplayStatics {
 
     // GameEngine
 
-    private static _gameEngine: GameEngine;
+    private static _gameEngine: GameEngine = null;
     public static get gameEngine() { return GameplayStatics._gameEngine; }
 
     public static setGameEngine(value: GameEngine): void {
@@ -28,7 +35,7 @@ export class GameplayStatics {
 
     // World
 
-    private static _world: World;
+    private static _world: World = null;
     public static get world() { return GameplayStatics._world }
 
     public static setWorld(value: World): void {
@@ -38,7 +45,7 @@ export class GameplayStatics {
 
     // Root window
 
-    private static _window: Window;
+    private static _window: Window = null;
     public static get rootWindow() { return this._window; }
 
     static setRootWindow(value: Window) {

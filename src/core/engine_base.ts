@@ -1,9 +1,13 @@
 /** Game engine for FactoryGame. */
 
-import { GameplayStatics } from "../utils/gameplay.js";
 import { EngineInputMappings } from "./input_base.js";
 import { BrowserInputHandler } from "./input_browser.js";
 import { Loc, ILoc } from "../utils/loc.js";
+import { GameplayStatics } from "../utils/gameplay.js";
+// (DocFix???) add double newlines between classes
+
+/** A type-safe way to pass classes. A default constructor must exist. */
+export interface TSubclassOf<T> { new(): T; };
 
 
 /**
@@ -54,7 +58,7 @@ export class GameEngine extends EngineObject {
      * Create the game engine. Shouldn't be called directly, call
      * from GameplayUtilities instead.
      */
-    public __initGameEngine__(master: Window): void {
+    public __initGameEngine__(master?: Window): void {
 
         // Set central reference to game engine.
         GameplayStatics.setGameEngine(this);
@@ -83,7 +87,7 @@ export class GameEngine extends EngineObject {
         // Let action mappings be added.
         this._inputMappings = new EngineInputMappings();
 
-        // Create GUI input receiver. (Python???)
+        // Create GUI input receiver.
         this._inputHandler = new BrowserInputHandler();
         this._inputHandler.bindToWidget(GameplayStatics.rootWindow);
 
@@ -102,10 +106,50 @@ export class GameEngine extends EngineObject {
         let world = new this._startingWorld();
         world.__initWorld__(this._window); // (Inconsistent??) above used GameplayStatics.rootWindow
         world.beginPlay();
+        // except AttributeError as e:
+        //     # The starting world is not a valid class.
+        //     raise AttributeError("Starting world '%s' for engine '%s' is not valid. %s"
+        //         % (self._starting_world.__name__, type(self).__name__, e)) from e
+
+        // Call begin play.
+        this.beginPlay();
+
+        // Start game window tkinter event loop. (Python???)
+        if (master === undefined || master === null) {
+            // Can add something for electron window mainloop possibly?
+            // this._window.mainloop();
+        }
     }
 
     /** Set up input mappings associated with a set of keys. */
     protected setupInputMappings(): void { }
+
+    /**
+     * Close the game engine. Shouldn't be called directly, call
+     * from GameplayUtilities instead.
+     */
+    public closeGame(): void {
+        if (!GameplayStatics.isGameValid())
+            return;
+
+        // Attempt to close game window. (Python???)
+        if (this._window !== null /* && this._window.exists()*/)
+            // It does exist. Close it.
+            // this._window.destroy();
+            // TODO: Add electron destroy window function here.
+            1;
+
+        // Delete world and all actors.
+        let world = GameplayStatics.world;
+        if (world !== undefined && world !== null)
+            world.beginDestroy();
+
+        // Begin destroying self.
+        this.beginDestroy();
+
+        // Delete gameplay statics, which holds many references.
+        GameplayStatics.clearAll();
+    }
 
     public get inputMappings() { return this._inputMappings; }
 
@@ -129,17 +173,11 @@ export class GameEngine extends EngineObject {
     private _inputHandler: BrowserInputHandler;
 }
 
-
 /**
  * Manages all content that makes up a level as well as keeping
  * track of all dynamically spawned actors and triggering core
  * gameplay events such as tick.
  */
-
-
-/** A type-safe way to pass classes. A default constructor must exist. */
-interface TSubclassOf<T> { new(): T; };
-
 export class World extends EngineObject {
 
     /** Set default values. */
@@ -154,6 +192,8 @@ export class World extends EngineObject {
         this._actors = [];
         this._toDestroy = [];
         this._tkObj = null;
+
+        this._clock = new THREE.Clock();
     }
 
     /** Initialise world with any active tkinter object TK_OBJ. (Python???) */
@@ -168,11 +208,11 @@ export class World extends EngineObject {
      * to finish.
      *
      * To have further control on the actor before it is gameplay ready,
-     * use deferred_spawn_actor.
+     * use deferredSpawnActor.
      *
      * @param actorClass Class of actor to spawn (Spelling???)
      * @param loc Location to spawn actor at.
-     * @param ActorType Type of actor to spawn and return.
+     * @param T Type of actor to spawn and return.
      * @return Spawned actor if successful, otherwise None
      */
     public spawnActor<T extends Actor>(actorClass: TSubclassOf<T>, loc: ILoc): T {
@@ -189,6 +229,7 @@ export class World extends EngineObject {
      *
      * @param actorClass class of actor to spawn
      * @param loc location to spawn actor at
+     * @param T Type of actor to spawn and return.
      * @return initialised actor object if successful, otherwise None
      */
     public deferredSpawnActor<T extends Actor>(actorClass: TSubclassOf<T>, loc: ILoc): T {
@@ -210,6 +251,7 @@ export class World extends EngineObject {
      * functions to safely begin for the actor.
      *
      * @param actorObject initialised actor object to finish spawning
+     * @param T Type of actor to spawn and return.
      * @return gameplay ready actor object if successful, otherwise None
      */
     public finishDeferredSpawnActor<T extends Actor>(actorObject: T): T {
@@ -235,6 +277,28 @@ export class World extends EngineObject {
         return actorObject;
     }
 
+    /**
+     * Remove an actor from this world.
+     *
+     * :warning: EXPERIMENTAL FEATURE!!! MAY NOT WORK!!! (Done???)
+     *
+     * @param actor Actor to destroy.
+     */
+    public destroyActor(actor: Actor): void {
+        // TODO: Check if the actor is actually in this world! (MissingFeature???)
+        this._toDestroy.push(actor);
+    }
+
+    /** Called to remove actors pending destruction. */
+    private destroyPending(): void {
+        this._toDestroy.forEach((actor) => {
+            actor.beginDestroy();
+            this._actors.splice(this._toDestroy.indexOf(actor), 1);
+        });
+
+        // Clear pending destruction. It's done already!
+        this._toDestroy = [];
+    }
 
     /**
      * Attempt to start a tick loop.
@@ -245,12 +309,36 @@ export class World extends EngineObject {
         if (!this._tkObj) // (Refactor???) use explicit null check
             return false;
 
+        // Start the three.js clock to measure delta times.
+        this._clock.start();
         this._tickLoop();
         return true;
     }
 
     private _tickLoop(): void {
-        throw new Error("Method not implemented.");
+        // Perform actor cleanup.
+        this.destroyPending();
+
+        // get delta time.
+        // let dt = GameplayStatics.gameEngine.FRAME_TIME; // in milisecond, as integer.
+
+        // get delta time using actual time difference between frames,
+        let dt = this._clock.getDelta();
+
+        // call tick event on other actors
+        for (let group = 0; group < ETickGroup.MAX; group++) {
+            // Call the groups in order.
+            let actorSet = this._tickingActors[group];
+            actorSet.forEach((actor) => {
+                actor.tick();
+            });
+        }
+
+        // schedule next tick
+        // setTimeout(() => {this._tickLoop();}, dt);
+
+        // schedule next tick using requestAnimationFrame for smoother animation
+        requestAnimationFrame(this._tickLoop);
     }
 
     /**
@@ -317,6 +405,9 @@ export class World extends EngineObject {
 
     /** Tkinter object reference for tick loop timer. (Python???) */
     private _tkObj: Window | HTMLElement;
+
+    /** Clock used for measuring time differences. */
+    private _clock: THREE.Clock;
 }
 
 
@@ -333,7 +424,6 @@ export enum ETickGroup {
 
     MAX = 5
 }
-
 
 /** Contains data about how a particular object should tick. */
 export class FTickFunction {
@@ -425,7 +515,12 @@ export class FTickFunction {
 // End of tick data structures
 ///////////////////////////////////////////////////////////
 
-class Actor extends EngineObject {
+/**
+ * An object that has a visual representation in the world. Actors
+ * are directly managed by a world object and should only be created
+ * by using spawn_actor functions from the current world.
+ */
+export class Actor extends EngineObject {
 
     public get world() { return this._world; }
     public get location() { return this._location; }
