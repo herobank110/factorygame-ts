@@ -276,38 +276,47 @@ export class World extends EngineObject {
         if (!(func instanceof Function))
             return;
 
-            if (newTickEnabled) {
-                // Add the actor to its specified tick group's actor set.
+        if (newTickEnabled) {
+            // Add the actor to its specified tick group's actor set.
 
-                let group = this._tickingActors.get(tickFunction.tickGroup);
-                if (group === undefined)
-                    return;
-                group.add(actor);
-            } else {
-                // Remove the actor from its tick group's actor set.
-                // (Refactor???) group used in both branches, py ver. overused exceptions
-                
-                let group = this._tickingActors.get(tickFunction.tickGroup);
-                if (group === undefined)
-                    return;
-                group.delete(actor);  // no throw guarantee
-            }
+            let group = this._tickingActors.get(tickFunction.tickGroup);
+            if (group === undefined)
+                return;
+            group.add(actor);
+        } else {
+            // Remove the actor from its tick group's actor set.
+            // (Refactor???) group used in both branches, py ver. overused exceptions
+
+            let group = this._tickingActors.get(tickFunction.tickGroup);
+            if (group === undefined)
+                return;
+            group.delete(actor);  // no throw guarantee
+        }
+    }
+
+    /** Destroy all actors. */
+    public beginDestroy(): void {
+        this._actors.forEach((actor) => {
+            actor.beginDestroy();
+            // (Refactor???) python removed elements one at a time
+        });
+        this._actors.splice(0, this._actors.length);
     }
 
 
     // Typescript member variable declarations.
 
     /** All spawned actors to receive tick events, grouped by tick priority. */
-    _tickingActors: Map<ETickGroup, Set<Actor>>;
+    private _tickingActors: Map<ETickGroup, Set<Actor>>;
 
     /** All spawned actors in the world. */
-    _actors: Array<Actor>;
+    private _actors: Array<Actor>;
 
     /** List of actors to destroy next tick. */
-    _toDestroy: Array<Actor>;
+    private _toDestroy: Array<Actor>;
 
     /** Tkinter object reference for tick loop timer. (Python???) */
-    _tkObj: Window | HTMLElement;
+    private _tkObj: Window | HTMLElement;
 }
 
 
