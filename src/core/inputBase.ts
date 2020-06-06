@@ -97,7 +97,6 @@ export enum EInputEvent {
 
 /** Contains mappings between input events and functions to fire. */
 export class EngineInputMappings {
-
     public constructor() {
         this._actionMappings = new Map();
         this._boundEvents = new Map();
@@ -180,6 +179,11 @@ export class EngineInputMappings {
         const boundFuncs = this._boundEvents.get(eventCode);
         if (boundFuncs !== undefined)
             boundFuncs.forEach((func) => { func(); });
+    }
+
+    /** Clear the bound events map, which may hold references to actors pending destruction. */
+    public clearBoundEvents() {
+        this._boundEvents.clear();
     }
 
 
