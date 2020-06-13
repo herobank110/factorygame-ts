@@ -45,17 +45,6 @@ export class Loc extends THREE.Vector3 {
     }
 
     public toString(): string {
-        // return `(X=${this.x}, Y=${this.y}, Z=${this.z})`;
-
-        // let ret = "(", it = -1;
-        // ((r) => { for (const i of this)
-        //     ret += `${++it?", ":""}${it < r.length ? `${r[it]}=${i}` : it}`; })(Loc._reprItems);
-        //  return ret + ")";
-
-        // return `(${[...this]
-        //     .map((i, it) => i < Loc._reprItems.length ? `${Loc._reprItems[it]}=${i}` : i)
-        //     .join(", ")})`;
-
         return (r => `(${[...this]
             .map((i, it) => i <= r.length ? `${r[it]}=${i}` : i)
             .join(", ")})`)(Loc._reprItems);
