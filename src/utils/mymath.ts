@@ -1,5 +1,8 @@
+import { Loc } from "./loc.js";
+
+
 /** Static math library. */
-class MathStat {
+export class MathStat {
     // (DocFix???)
     public static clamp(val: number, min?: number, max?: number): number {
         if (min == undefined) min == 0;
@@ -16,14 +19,14 @@ class MathStat {
     /** returns val mapped from range(in_a to in_b) to range(out_a to out_b)
      * eg: 15 mapped from 10,20 to 1,100 returns 50 */
     public static mapRange(val: number, inA: number, inB: number, outA: number, outB: number): number {
-        return MathStat.lerp(outA, outB, 
+        return MathStat.lerp(outA, outB,
             MathStat.getpercent(val, inA, inB), false);
     }
 
     /** returns val mapped from range(in_a to in_b) to range(out_a to out_b)
      * eg: 15 mapped from 10,20 to 1,100 returns 50 */
     public static mapRangeClamped(val: number, inA: number, inB: number, outA: number, outB: number): number {
-        return MathStat.lerp(outA, outB, 
+        return MathStat.lerp(outA, outB,
             MathStat.clamp(MathStat.getpercent(val, inA, inB)), true);
     }
 
@@ -31,12 +34,15 @@ class MathStat {
      * also works with iterables by lerping each element of a and b
      * can also extrapolate if clamp is set to False */
     public static lerp<T>(a: T, b: T, bias: number, clamp?: boolean): T {
-        let lerp1 = (a, b, bias) => a + (b-a) * bias;
+        let lerp1 = (a, b, bias) => a + (b - a) * bias;
         let crossIter = function* (a, b) {
-            for (let i = 0; i < a.length; i++)
-                yield [a[i], b[i]];
+            const a_it = a[Symbol.iterator](), b_it = b[Symbol.iterator]();
+            while (1) {
+                const a_i = a_it.next(), b_i = b_it.next();
+                if (a_i.done || b_i.done) return;
+                yield [a_i.value, b_i.value];
+            }
         };
-        
         let crossIterStr = function* (a, b) {
             // format: '#rrggbb...' hex codes
             // yields integers rr, gg, bb, etc for a and b
@@ -47,8 +53,24 @@ class MathStat {
         };
         if (clamp)
             bias = MathStat.clamp(bias);
-         
-// TODO: Finish this function.
+
+        let crossLerp = [];
+        for (const [ax, bx] of crossIter(a, b)) {
+            crossLerp.push(lerp1(ax, bx, bias));
+            console.log(ax + "helo");
+        }
+
+            console.log(crossLerp);
+
+        let type = typeof a as unknown as typeof Loc;
+        try {
+            //@ts-ignore
+            return new type(...crossLerp) as unknown as T;
+        } catch (e) {
+            return new type(crossLerp) as unknown as T;
+        }
+
+        return a;
     }
 
 
