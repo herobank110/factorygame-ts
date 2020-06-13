@@ -5,16 +5,19 @@ var THREE = window.THREE;
 
 /** Structure for representing coordinates, with basic arithmetic.
  * 
- * Essentially a 3 dimensional vector.
+ * Essentially a 2 or 3 dimensional vector. The reason for supporting
+ * both sizes in the same class is for ease of use. The default option
+ * is to construct a 2D vector, unless three arguments are given.
  */
 export class Loc extends THREE.Vector3 {
+    protected static _reprItems: string = "XYZ";
 
-    /** Sets X, Y, Z elements to zero. */
+    /** Sets X, Y elements to zero. */
     public constructor();
 
     /** Constructs X, Y, Z elements individually. */
     public constructor(x: Number, y: Number, z: Number);
-    
+
     /** Constructs X and Y elements to simulate a 2D vector. (Z will be zero.) */
     public constructor(x: Number, y: Number);
 
@@ -22,22 +25,40 @@ export class Loc extends THREE.Vector3 {
     public constructor(other: Loc | Array<Number>);
 
     public constructor() {
-        if (arguments[0] instanceof Array)
+        if (arguments[0] instanceof Array) {
             super(...arguments[0]);
-        else if (arguments[0] instanceof Loc)
+            this._dimensions = Math.min(3, arguments[0].length);
+        } else if (arguments[0] instanceof Loc) {
             super(...arguments[0]);
-        else
+            this._dimensions = arguments[0]._dimensions;
+        } else {
             super(...arguments);
+            this._dimensions = Math.min(3, arguments.length);
+        }
+        if (this._dimensions === 0) this._dimensions = 2;
     }
 
     public *[Symbol.iterator]() {
-        yield this.x;
-        yield this.y;
-        yield this.z;
+        /* if (this._dimensions >= 1) */ yield this.x;
+        /* if (this._dimensions >= 2) */ yield this.y;
+        if (this._dimensions >= 3) yield this.z;
     }
 
     public toString(): string {
-        return `(X=${this.x}, Y=${this.y},  Z=${this.z})`;
+        // return `(X=${this.x}, Y=${this.y}, Z=${this.z})`;
+
+        // let ret = "(", it = -1;
+        // ((r) => { for (const i of this)
+        //     ret += `${++it?", ":""}${it < r.length ? `${r[it]}=${i}` : it}`; })(Loc._reprItems);
+        //  return ret + ")";
+
+        // return `(${[...this]
+        //     .map((i, it) => i < Loc._reprItems.length ? `${Loc._reprItems[it]}=${i}` : i)
+        //     .join(", ")})`;
+
+        return (r => `(${[...this]
+            .map((i, it) => i <= r.length ? `${r[it]}=${i}` : i)
+            .join(", ")})`)(Loc._reprItems);
     }
 
     /** Return Loc with types (int or float) from repr string OTHER.
@@ -50,6 +71,11 @@ export class Loc extends THREE.Vector3 {
         let items = other.split(",");
         return new Loc(Number(items[0]), Number(items[1]), Number(items[2]));
     }
+
+
+    // Typescript member variable declarations
+    /** Number of valid components in this vector. Usually 2 or 3. */
+    private _dimensions: number;
 }
 
 /** Allows arrays to be passed as Loc.
