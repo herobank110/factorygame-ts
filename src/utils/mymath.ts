@@ -1,6 +1,11 @@
 import { Loc } from "./loc.js";
 
 
+export interface IIterable<T> {
+    [Symbol.iterator](): Generator<T>;
+}
+
+
 /** Static math library. */
 export class MathStat {
     // (DocFix???)
@@ -30,12 +35,36 @@ export class MathStat {
             MathStat.clamp(MathStat.getpercent(val, inA, inB)), true);
     }
 
+
     /** returns interpolation between a and b. bias 0 = a, bias 1 = b.
      * also works with iterables by lerping each element of a and b
-     * can also extrapolate if clamp is set to False */
-    public static lerp<T>(a: T, b: T, bias: number, clamp?: boolean): T {
-        let lerp1 = (a, b, bias) => a + (b - a) * bias;
-        let crossIter = function* (a, b) {
+     * can also extrapolate if clamp is set to False
+     * 
+     * This version will lerp between two numbers.
+     */
+    public static lerp(a: number, b: number, bias: number, clamp?: boolean): number;
+
+    /** Lerp components of two vectors, not the `ILoc` which accepts arrays.
+     * 
+     * @return A new Loc object.
+     */
+    public static lerp(a: Loc, b: Loc, bias: number, clamp?: boolean): Loc;
+
+    /** Lerp numeric components of two iterable objects.
+     * 
+     * @return an new array.
+     */
+    public static lerp(a: IIterable<number>, b: IIterable<number>, bias: number, clamp?: boolean): Array<number>;
+
+    /** Lerp hex codes. String must be formatted like: `"#rrggbb"`.
+     * 
+     * @return A new string in hex format `"#rrggbb"`. Returns `""` if format invalid.
+     */
+    public static lerp(a: string, b: string, bias: number, clamp?: boolean): string;
+
+    public static lerp(a, b, bias, clamp) {
+        let lerp1 = (a: number, b: number, bias: number) => a + (b - a) * bias;
+        let crossIter = function*<T>(a: IIterable<T>, b: IIterable<T>): Generator<T[]> {
             const a_it = a[Symbol.iterator](), b_it = b[Symbol.iterator]();
             while (1) {
                 const a_i = a_it.next(), b_i = b_it.next();
@@ -53,25 +82,29 @@ export class MathStat {
         };
         if (clamp)
             bias = MathStat.clamp(bias);
+        if (!(a instanceof String)) {
+            // lerp each element in iterable container
+            let crossLerp = [];
+            for (const [ax, bx] of crossIter(a as IIterable<number>, b)) {
+                crossLerp.push(lerp1(ax, bx, bias));
+            }
 
-        let crossLerp = [];
-        for (const [ax, bx] of crossIter(a, b)) {
-            crossLerp.push(lerp1(ax, bx, bias));
-            console.log(ax + "helo");
+            if (a instanceof Loc) {
+                return new Loc(crossLerp);
+            } else {
+                return crossLerp;
+            }
+        } else {
+            // string hex code color lerp
+            if (a instanceof String) {
+                let retStr = "";
+                for (const [ax, bx] of crossIterStr(a, b)) {
+                    retStr += lerp1(ax, bx, bias).toString(16);
+                }
+                return retStr;
+            }
+            // simple lerp
+            return lerp1(a, b, bias);
         }
-
-            console.log(crossLerp);
-
-        let type = typeof a as unknown as typeof Loc;
-        try {
-            //@ts-ignore
-            return new type(...crossLerp) as unknown as T;
-        } catch (e) {
-            return new type(crossLerp) as unknown as T;
-        }
-
-        return a;
     }
-
-
 }
