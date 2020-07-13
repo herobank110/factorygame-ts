@@ -1,6 +1,6 @@
 {
   "name": "factorygame",
-  "version": "1.0.0",
+  "version": "0.1.2",
   "description": "A Typescript game framework extension of three.js.",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,17 @@
   "author": "David Kanekanian",
   "license": "ISC",
   "devDependencies": {
-    "three": "0.116.1",
-    "typescript": "3.9.3"
-  }
+    "three": "0.118.3",
+    "typescript": "3.4.3"
+  },
+  "files": [
+    "src/core/engineBase.js",
+    "src/core/inputBase.js",
+    "src/core/inputBrowser.js",
+    "src/utils/gameplay.js",
+    "src/utils/loc.js",
+    "src/utils/mymath.js",
+    "src/factoryEngine.js",
+    "src/index.js"
+  ]
 }
