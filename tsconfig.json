@@ -1,7 +1,30 @@
+// Default Configuration
 {
 	"compilerOptions": {
 		"target": "es6",
 		"moduleResolution": "node",
 	},
-	"include": [ "src/**/*.ts", "node_modules/three/src/**.ts" ],
+	"include": [ "src/**/*.ts", "node_modules/three/src/**.ts" ]
 }
+
+// Publish Configuration (Part 1)
+// Generate .d.ts files with comments.
+// {
+// 	"compilerOptions": {
+// 		"target": "es6",
+// 		"moduleResolution": "node",
+// 		"declaration": true
+// 	},
+// 	"include": [ "src/**/*.ts", "node_modules/three/src/**.ts" ]
+// }
+
+// Publish Configuration (Part 2)
+// Generate .js files without comments.
+// {
+// 	"compilerOptions": {
+// 		"target": "es6",
+// 		"moduleResolution": "node",
+// 		"removeComments": true
+// 	},
+// 	"include": [ "src/**/*.ts", "node_modules/three/src/**.ts" ]
+// }

@@ -106,3 +106,5 @@ dist
 
 # compiled typescript->js files
 src/**/*.js
+# compiled typescript declaration files
+src/**/*.d.ts
