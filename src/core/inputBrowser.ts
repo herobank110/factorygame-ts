@@ -115,6 +115,6 @@ export class BrowserInputHandler extends GUIInputHandler {
         let key = keys.get(formatArg);
         if (key !== undefined)
             this.registerKeyEvent(key, inputEvent);
-        event.preventDefault();
+        // event.preventDefault();
     }
 }
