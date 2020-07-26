@@ -47,10 +47,12 @@ export class GameEngine extends EngineObject {
     public get WINDOW_TITLE() { return this._windowTitle; }
     public get FRAME_RATE() { return this._frameRate; } // in frames per second
     public get FRAME_TIME() { return Math.floor(1000 / this._frameRate); } // in miliseconds (Spelling???)
+    public get ALLOW_CONTEXT_MENU() { return this._allowContextMenu; }
 
     /** Initialise game engine in widget MASTER. If omitted a new window is made. */
     constructor() {
         super();
+        // TODO: Move to in-class member initializers
         this._windowTitle = "engine_base";
         this._frameRate = 30;
         this._startingWorld = null;
@@ -107,7 +109,7 @@ export class GameEngine extends EngineObject {
         // try: (DocFix???)
         let world = new this._startingWorld();
         world.__initWorld__(this._window); // (Inconsistent??) above used GameplayStatics.rootWindow
-        GameplayStatics.setWorld(world);        
+        GameplayStatics.setWorld(world);
         world.beginPlay();
         // except AttributeError as e:
         //     # The starting world is not a valid class.
@@ -171,6 +173,9 @@ export class GameEngine extends EngineObject {
      * If omitted default world will be used.
      */
     protected _startingWorld: typeof World;
+
+    protected _allowContextMenu: boolean = false;
+
     protected _window: Window;  // | whatever electron calls a window
     private _inputMappings: EngineInputMappings;
     private _inputHandler: BrowserInputHandler;

@@ -4,6 +4,7 @@
 
 
 import { GUIInputHandler, EKeys, EInputEvent, FKey } from "./inputBase.js";
+import { GameplayStatics } from "../utils/gameplay.js";
 
 
 type KeyMap = Map<string, FKey>;
@@ -98,16 +99,18 @@ export class BrowserInputHandler extends GUIInputHandler {
             });
         }
 
-        // Prevent right click context menu
-        inWidget.addEventListener("contextmenu", (event) => {
-            event.preventDefault();
-        });
+        // Prevent right click context menu if desired.
+        if (GameplayStatics.isGameValid() && GameplayStatics.gameEngine.ALLOW_CONTEXT_MENU) {
+            inWidget.addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+            });
+        }
     }
 
     /**
      * Process generic browser input events and send to the engine.
      * 
-     * These bindings will prevent the default action so other
+     * These bindings won't prevent the default action so other
      * handlers may not work. You can still safely bind to 'click'
      * events or 'keypress' events instead.
      */
