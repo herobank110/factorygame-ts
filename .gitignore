@@ -108,3 +108,6 @@ dist
 src/**/*.js
 # compiled typescript declaration files
 src/**/*.d.ts
+
+# compiled files for npm publication
+include/

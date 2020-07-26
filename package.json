@@ -1,6 +1,6 @@
 {
   "name": "factorygame",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "A Typescript game framework extension of three.js.",
   "main": "index.js",
   "scripts": {
@@ -14,21 +14,23 @@
     "typescript": "3.4.3"
   },
   "files": [
-    "src/core/engineBase.js",
-    "src/core/engineBase.d.ts",
-    "src/core/inputBase.js",
-    "src/core/inputBase.d.ts",
-    "src/core/inputBrowser.js",
-    "src/core/inputBrowser.d.ts",
-    "src/utils/gameplay.js",
-    "src/utils/gameplay.d.ts",
-    "src/utils/loc.js",
-    "src/utils/loc.d.ts",
-    "src/utils/mymath.js",
-    "src/utils/mymath.d.ts",
-    "src/factoryEngine.js",
-    "src/factoryEngine.d.ts",
-    "src/index.js",
-    "src/index.d.ts"
+    "include/factorygame/core/engineBase.js",
+    "include/factorygame/core/engineBase.d.ts",
+    "include/factorygame/core/inputBase.js",
+    "include/factorygame/core/inputBase.d.ts",
+    "include/factorygame/core/inputBrowser.js",
+    "include/factorygame/core/inputBrowser.d.ts",
+    "include/factorygame/utils/gameplay.js",
+    "include/factorygame/utils/gameplay.d.ts",
+    "include/factorygame/utils/loc.js",
+    "include/factorygame/utils/loc.d.ts",
+    "include/factorygame/utils/mymath.js",
+    "include/factorygame/utils/mymath.d.ts",
+    "include/factorygame/factoryEngine.js",
+    "include/factorygame/factoryEngine.d.ts",
+    "include/factorygame/factorygame.js",
+    "include/factorygame/factorygame.d.ts",
+    "include/factorygame/index.js",
+    "include/factorygame/index.d.ts"
   ]
 }
