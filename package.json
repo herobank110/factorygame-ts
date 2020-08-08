@@ -1,6 +1,6 @@
 {
   "name": "factorygame",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A Typescript game framework extension of three.js.",
   "main": "index.js",
   "scripts": {
