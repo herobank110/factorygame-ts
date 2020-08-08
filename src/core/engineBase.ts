@@ -300,6 +300,9 @@ export class World extends EngineObject {
     /** Called to remove actors pending destruction. */
     private destroyPending(): void {
         this._toDestroy.forEach((actor) => {
+            if (actor === undefined) {
+                return;
+            }
             actor.beginDestroy();
             this._actors.splice(this._toDestroy.indexOf(actor), 1);
         });
