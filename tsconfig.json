@@ -1,11 +1,11 @@
 // Default Configuration
-{
-	"compilerOptions": {
-		"target": "es6",
-		"moduleResolution": "node",
-	},
-	"include": [ "src/**/*.ts", "node_modules/three/src/**.ts" ]
-}
+// {
+// 	"compilerOptions": {
+// 		"target": "es6",
+// 		"moduleResolution": "node",
+// 	},
+// 	"include": [ "src/**/*.ts", "node_modules/three/src/**.ts" ]
+// }
 
 // Publish Configuration (Part 1)
 // Generate .d.ts files with comments.
@@ -22,13 +22,13 @@
 
 // Publish Configuration (Part 2)
 // Generate .js files without comments.
-// {
-// 	"compilerOptions": {
-// 		"target": "es6",
-// 		"moduleResolution": "node",
-// 		"removeComments": true,
-// 		"rootDir": "src",
-// 		"outDir": "include/factorygame"
-// 	},
-// 	"include": [ "src/**/*.ts", "node_modules/three/src/**.ts" ]
-// }
+{
+	"compilerOptions": {
+		"target": "es6",
+		"moduleResolution": "node",
+		"removeComments": true,
+		"rootDir": "src",
+		"outDir": "include/factorygame"
+	},
+	"include": [ "src/**/*.ts", "node_modules/three/src/**.ts" ]
+}
