@@ -77,7 +77,7 @@ export class MathStat {
             // yields integers rr, gg, bb, etc for a and b
             for (let i = 0; i < a.length; i++) {
                 if (i % 2 === 1) // (Refactor???)
-                    yield [parseInt(a.substring(i, 2), 16), parseInt(b.substring(i, 2), 16)];
+                    yield [parseInt(a.substr(i, 2), 16), parseInt(b.substr(i, 2), 16)];
             }
         };
         if (clamp)
