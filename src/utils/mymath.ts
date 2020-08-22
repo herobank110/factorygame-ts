@@ -102,7 +102,7 @@ export class MathStat {
         } else {
             // string hex code color lerp
             if (typeof (a) == "string") {
-                let retStr = "";
+                let retStr = "#";
                 for (const [ax, bx] of crossIterStr(a, b)) {
                     retStr += lerp1(ax, bx, bias).toString(16);
                 }
