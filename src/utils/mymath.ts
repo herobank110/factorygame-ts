@@ -82,21 +82,26 @@ export class MathStat {
         };
         if (clamp)
             bias = MathStat.clamp(bias);
-        if (!(a instanceof String)) {
-            // lerp each element in iterable container
-            let crossLerp = [];
-            for (const [ax, bx] of crossIter(a as IIterable<number>, b)) {
-                crossLerp.push(lerp1(ax, bx, bias));
-            }
+        if (!(typeof (a) == "string")) {
+            try {
+                // lerp each element in iterable container
+                let crossLerp = [];
+                for (const [ax, bx] of crossIter(a as IIterable<number>, b)) {
+                    crossLerp.push(lerp1(ax, bx, bias));
+                }
 
-            if (a instanceof Loc) {
-                return new Loc(crossLerp);
-            } else {
-                return crossLerp;
+                if (a instanceof Loc) {
+                    return new Loc(crossLerp);
+                } else {
+                    return crossLerp;
+                }
+            } catch (error) {
+                // simple lerp
+                return lerp1(a, b, bias);
             }
         } else {
             // string hex code color lerp
-            if (a instanceof String) {
+            if (typeof (a) == "string") {
                 let retStr = "";
                 for (const [ax, bx] of crossIterStr(a, b)) {
                     retStr += lerp1(ax, bx, bias).toString(16);
