@@ -83,6 +83,37 @@ export class EKeys {
     public static readonly X: FKey = new FKey_Impl("X");
     public static readonly Y: FKey = new FKey_Impl("Y");
     public static readonly Z: FKey = new FKey_Impl("Z");
+
+    public static readonly One: FKey = new FKey_Impl("One");
+    public static readonly Two: FKey = new FKey_Impl("Two");
+    public static readonly Three: FKey = new FKey_Impl("Three");
+    public static readonly Four: FKey = new FKey_Impl("Four");
+    public static readonly Five: FKey = new FKey_Impl("Five");
+    public static readonly Six: FKey = new FKey_Impl("Six");
+    public static readonly Seven: FKey = new FKey_Impl("Seven");
+    public static readonly Eight: FKey = new FKey_Impl("Eight");
+    public static readonly Nine: FKey = new FKey_Impl("Nine");
+    public static readonly Zero: FKey = new FKey_Impl("Zero");
+
+    public static readonly Tab: FKey = new FKey_Impl("Tab");
+    public static readonly CapsLock: FKey = new FKey_Impl("CapsLock");
+    public static readonly LeftShift: FKey = new FKey_Impl("LeftShift");
+    public static readonly LeftControl: FKey = new FKey_Impl("LeftControl");
+    public static readonly LeftAlt: FKey = new FKey_Impl("LeftAlt");
+    public static readonly SpaceBar: FKey = new FKey_Impl("SpaceBar");
+    public static readonly RightAlt: FKey = new FKey_Impl("LeftAlt");
+    public static readonly RightControl: FKey = new FKey_Impl("LeftControl");
+    public static readonly RightShift: FKey = new FKey_Impl("LeftShift");
+    public static readonly Enter: FKey = new FKey_Impl("Enter");
+    public static readonly Backspace: FKey = new FKey_Impl("Backspace");
+    public static readonly Equals: FKey = new FKey_Impl("Equals");
+    public static readonly Minus: FKey = new FKey_Impl("Minus");
+    public static readonly Escape: FKey = new FKey_Impl("Escape");
+
+    public static readonly UpArrow: FKey = new FKey_Impl("UpArrow");
+    public static readonly DownArrow: FKey = new FKey_Impl("DownArrow");
+    public static readonly LeftArrow: FKey = new FKey_Impl("LeftArrow");
+    public static readonly RightArrow: FKey = new FKey_Impl("RightArrow");
 }
 
 
