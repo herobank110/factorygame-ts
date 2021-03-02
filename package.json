@@ -10,7 +10,7 @@
   "author": "David Kanekanian",
   "license": "ISC",
   "devDependencies": {
-    "three": "0.118.3",
+    "three": "0.125.0",
     "typescript": "3.8.3"
   },
   "files": [
